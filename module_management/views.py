@@ -8,6 +8,7 @@ from module_management.serializers import ModuleSerializer
 
 from course_management.models import Course
 from module_management.models import Module
+from accounts.permissions import IsOwner
 
 class ModuleCreateView(CreateAPIView):
     authentication_classes=[authentication.TokenAuthentication]
@@ -20,6 +21,10 @@ class ModuleCreateView(CreateAPIView):
         return serializer.save(course=course_object)
 
 
-class ModuleRetrieveUpdateDelete(RetrieveAPIView,UpdateAPIView,DestroyAPIView):
+class ModuleRetrieveUpdateDeleteView(RetrieveAPIView,UpdateAPIView,DestroyAPIView):
     serializer_class=ModuleSerializer
     queryset=Module.objects.all()
+    
+    authentication_classes = [authentication.TokenAuthentication]
+
+    permission_classes =[permissions.IsAuthenticated]
