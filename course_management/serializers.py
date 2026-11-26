@@ -7,7 +7,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     module_count = serializers.SerializerMethodField(read_only=True)
 
-    # modules=serializers.SerializerMethodField(read_only=True)
+    modules=serializers.SerializerMethodField(read_only=True)
 
 
     class Meta:
@@ -21,10 +21,10 @@ class CourseSerializer(serializers.ModelSerializer):
 
         return Module.objects.filter(course=obj).count()
 
-    # def get_modules(self,obj):
-    #     qs=Module.objects.filter(course=obj)
-    #     serializer_instance=ModuleSerializer(qs,many=True)
-    #     return serializer_instance.data
+    def get_modules(self,obj):
+        qs=Module.objects.filter(course=obj)
+        serializer_instance=ModuleSerializer(qs,many=True)
+        return serializer_instance.data
 
 
 
