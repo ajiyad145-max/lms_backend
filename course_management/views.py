@@ -1,20 +1,21 @@
 from django.shortcuts import render,get_object_or_404
 
 # Create your views here.
-# from rest_framework.generic import ListAPIView
+# from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from course_management.serializers import CourseSerializer
 from rest_framework import authentication,permissions
 from course_management.models import Course
 from rest_framework.response import Response
+from accounts.permissions import IsOwner
 
 
 # class CourseListCreateView(ListAPIView):
-#     serializer = CourseSerializer
+#     serializer_class = CourseSerializer
 
 #     authentication_classes=[authentication.TokenAuthentication]
 #     permission_classes=[permissions.IsAuthenticated]
-#     def get_quaryset(self):
+#     def get_queryset(self):
 #         return Course.objects.filter(trainer=self.request.user)
 
 
@@ -40,17 +41,21 @@ class CourseListCreateView(APIView):
 
 class CourseRetrieveUpdateDeleteView(APIView):
     authentication_classes=[authentication.TokenAuthentication]
-    permission_classes=[permissions.IsAuthenticated]
+    permission_classes=[IsOwner]
 
     def get(self,request,pk=None):
         qs=get_object_or_404(Course,id=pk)
+        self.check_object_permissions(request,qs)
         serializer_instance=CourseSerializer(qs)
         return Response(serializer_instance.data)
 
-    def put(self,request,pk=None):
+    def patch(self,request,pk=None):
+    # def put(self,request,pk=None):
         form_data=request.data
         instance=get_object_or_404(Course,id=pk)
-        serializer_instance=CourseSerializer(data=form_data,instance=instance)
+        self.check_object_permissions(request,instance)
+        # serializer_instance=CourseSerializer(data=form_data,instance=instance)
+        serializer_instance=CourseSerializer(data=form_data,instance=instance,partial=True)
         if serializer_instance.is_valid():
             serializer_instance.save()
             return Response(serializer_instance.data)
@@ -59,6 +64,7 @@ class CourseRetrieveUpdateDeleteView(APIView):
 
     def delete(self,request,pk=None):
         qs=get_object_or_404(Course,id=pk)
+        self.check_object_permissions(request,qs)
         qs.delete()
         return Response({"message":"deleted"})
 

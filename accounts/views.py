@@ -13,12 +13,14 @@ from rest_framework.response import Response
 class TrainerSignupView(CreateAPIView):
     serializer_class = TrainerSerializer
 
+
 class TrainerProfileRetrieveUpdateView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     def get(self, request):
         auth_user = request.user
         qs = TrainerProfile.objects.filter(user=auth_user)
+        # qs= auth_user.trainer_profile
         serializer_instance = TrainerProfileSerializer(qs,many=True)
         return Response(serializer_instance.data)
 
